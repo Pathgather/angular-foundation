@@ -139,17 +139,26 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
         }
       });
 
-      function removeModalWindow(modalInstance) {
+      function removeModalWindow(modalInstance, immediately) {
 
         var body = $document.find('body').eq(0);
         var modalWindow = openedWindows.get(modalInstance).value;
+        var modalScopeRef = modalWindow.modalScope;
+
+        if (immediately == null) {
+          immediately = false;
+        }
 
         //clean up the stack
         openedWindows.remove(modalInstance);
 
         //remove window DOM element
-        removeAfterAnimate(modalWindow.modalDomEl, modalWindow.modalScope, modalWindow.windowEmulateTime, function () {
+        removeAfterAnimate(modalWindow.modalDomEl, modalWindow.modalScope, immediately ? null : modalWindow.windowEmulateTime, function () {
           checkRemoveBackdrop(modalWindow.backdropEmulateTime);
+          if (modalScopeRef.$destroyNeeded) {
+            modalScopeRef.$destroy();
+            modalScopeRef = null;
+          }
         });
         body.toggleClass(OPENED_MODAL_CLASS, openedWindows.length() > 0);
       }
@@ -254,19 +263,19 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
         body.addClass(OPENED_MODAL_CLASS);
       };
 
-      $modalStack.close = function (modalInstance, result) {
+      $modalStack.close = function (modalInstance, result, immediately) {
         var modalWindow = openedWindows.get(modalInstance).value;
         if (modalWindow) {
           modalWindow.deferred.resolve(result);
-          removeModalWindow(modalInstance);
+          removeModalWindow(modalInstance, immediately);
         }
       };
 
-      $modalStack.dismiss = function (modalInstance, reason) {
+      $modalStack.dismiss = function (modalInstance, reason, immediately) {
         var modalWindow = openedWindows.get(modalInstance).value;
         if (modalWindow) {
           modalWindow.deferred.reject(reason);
-          removeModalWindow(modalInstance);
+          removeModalWindow(modalInstance, immediately);
         }
       };
 
@@ -325,11 +334,11 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
             var modalInstance = {
               result: modalResultDeferred.promise,
               opened: modalOpenedDeferred.promise,
-              close: function (result) {
-                $modalStack.close(modalInstance, result);
+              close: function (result, immediately) {
+                $modalStack.close(modalInstance, result, immediately);
               },
-              dismiss: function (reason) {
-                $modalStack.dismiss(modalInstance, reason);
+              dismiss: function (reason, immediately) {
+                $modalStack.dismiss(modalInstance, reason, immediately);
               }
             };
 
@@ -351,6 +360,9 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
               var modalScope = (modalOptions.scope || $rootScope).$new();
               modalScope.$close = modalInstance.close;
               modalScope.$dismiss = modalInstance.dismiss;
+              if (!modalOptions.scope) {
+                modalScope.$destroyNeeded = true;
+              }
 
               var ctrlInstance, ctrlLocals = {};
               var resolveIter = 1;
