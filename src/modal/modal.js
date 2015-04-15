@@ -139,35 +139,24 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
         }
       });
 
-      function removeModalWindow(modalInstance, immediately) {
+      function removeModalWindow(modalInstance) {
 
         var body = $document.find('body').eq(0);
         var modalWindow = openedWindows.get(modalInstance).value;
-        var modalScopeRef = modalWindow.modalScope;
-
-        if (immediately == null) {
-          immediately = false;
-        }
 
         //clean up the stack
         openedWindows.remove(modalInstance);
 
         //remove window DOM element
-        removeAfterAnimate(modalWindow.modalDomEl, modalWindow.modalScope, immediately ? null : modalWindow.windowEmulateTime, function () {
-          checkRemoveBackdrop(modalWindow.backdropEmulateTime);
-          if (modalScopeRef.$destroyNeeded) {
-            modalScopeRef.$destroy();
-            modalScopeRef = null;
-          }
-        });
+        removeAfterAnimate(modalWindow.modalDomEl, modalWindow.modalScope, 300, checkRemoveBackdrop);
         body.toggleClass(OPENED_MODAL_CLASS, openedWindows.length() > 0);
       }
 
-      function checkRemoveBackdrop(emulateTime) {
+      function checkRemoveBackdrop() {
           //remove backdrop if no longer needed
           if (backdropDomEl && backdropIndex() == -1) {
             var backdropScopeRef = backdropScope;
-            removeAfterAnimate(backdropDomEl, backdropScope, emulateTime, function () {
+            removeAfterAnimate(backdropDomEl, backdropScope, 150, function () {
               backdropScopeRef.$destroy();
               backdropScopeRef = null;
             });
@@ -227,9 +216,7 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
           deferred: modal.deferred,
           modalScope: modal.scope,
           backdrop: modal.backdrop,
-          keyboard: modal.keyboard,
-          windowEmulateTime: modal.windowEmulateTime,
-          backdropEmulateTime: modal.backdropEmulateTime
+          keyboard: modal.keyboard
         });
 
         var body = $document.find('body').eq(0),
@@ -241,7 +228,7 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
           backdropDomEl = $compile('<div modal-backdrop></div>')(backdropScope);
           body.append(backdropDomEl);
         }
-
+          
         // Create a faux modal div just to measure its
         // distance to top
         var faux = angular.element('<div class="reveal-modal" style="z-index:-1""></div>');
@@ -263,19 +250,19 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
         body.addClass(OPENED_MODAL_CLASS);
       };
 
-      $modalStack.close = function (modalInstance, result, immediately) {
+      $modalStack.close = function (modalInstance, result) {
         var modalWindow = openedWindows.get(modalInstance).value;
         if (modalWindow) {
           modalWindow.deferred.resolve(result);
-          removeModalWindow(modalInstance, immediately);
+          removeModalWindow(modalInstance);
         }
       };
 
-      $modalStack.dismiss = function (modalInstance, reason, immediately) {
+      $modalStack.dismiss = function (modalInstance, reason) {
         var modalWindow = openedWindows.get(modalInstance).value;
         if (modalWindow) {
           modalWindow.deferred.reject(reason);
-          removeModalWindow(modalInstance, immediately);
+          removeModalWindow(modalInstance);
         }
       };
 
@@ -299,9 +286,7 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
     var $modalProvider = {
       options: {
         backdrop: true, //can be also false or 'static'
-        keyboard: true,
-        removeWindowEmulateTime: 300,
-        removeBackdropEmulateTime: 150
+        keyboard: true
       },
       $get: ['$injector', '$rootScope', '$q', '$http', '$templateCache', '$controller', '$modalStack',
         function ($injector, $rootScope, $q, $http, $templateCache, $controller, $modalStack) {
@@ -334,11 +319,11 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
             var modalInstance = {
               result: modalResultDeferred.promise,
               opened: modalOpenedDeferred.promise,
-              close: function (result, immediately) {
-                $modalStack.close(modalInstance, result, immediately);
+              close: function (result) {
+                $modalStack.close(modalInstance, result);
               },
-              dismiss: function (reason, immediately) {
-                $modalStack.dismiss(modalInstance, reason, immediately);
+              dismiss: function (reason) {
+                $modalStack.dismiss(modalInstance, reason);
               }
             };
 
@@ -360,9 +345,6 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
               var modalScope = (modalOptions.scope || $rootScope).$new();
               modalScope.$close = modalInstance.close;
               modalScope.$dismiss = modalInstance.dismiss;
-              if (!modalOptions.scope) {
-                modalScope.$destroyNeeded = true;
-              }
 
               var ctrlInstance, ctrlLocals = {};
               var resolveIter = 1;
@@ -384,8 +366,6 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
                 content: tplAndVars[0],
                 backdrop: modalOptions.backdrop,
                 keyboard: modalOptions.keyboard,
-                windowEmulateTime: modalOptions.removeWindowEmulateTime,
-                backdropEmulateTime: modalOptions.removeBackdropEmulateTime,
                 windowClass: modalOptions.windowClass
               });
 
