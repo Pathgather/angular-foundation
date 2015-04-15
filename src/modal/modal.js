@@ -257,7 +257,8 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
       };
 
       $modalStack.close = function (modalInstance, result) {
-        var modalWindow = openedWindows.get(modalInstance).value;
+        var stackItem = openedWindows.get(modalInstance);
+        var modalWindow = stackItem && stackItem.value;
         if (modalWindow) {
           modalWindow.deferred.resolve(result);
           removeModalWindow(modalInstance);
@@ -265,7 +266,8 @@ angular.module('mm.foundation.modal', ['mm.foundation.transition'])
       };
 
       $modalStack.dismiss = function (modalInstance, reason) {
-        var modalWindow = openedWindows.get(modalInstance).value;
+        var stackItem = openedWindows.get(modalInstance);
+        var modalWindow = stackItem && stackItem.value;
         if (modalWindow) {
           modalWindow.deferred.reject(reason);
           removeModalWindow(modalInstance);
