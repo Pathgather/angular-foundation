@@ -1,3 +1,68 @@
+<a name="v0.6.0"></a>
+# v0.6.0 (unreleased)
+## Features
+* **dropdownToggle**
+  - Add 'expanded' class when toggled
+* **modal**
+  - Add `controllerAs` option ([#176](https://github.com/pineconellc/angular-foundation/pull/176))
+
+## Bug Fixes
+* **modal**
+  - Fixes focus on model open
+* **tour**
+  - Fixes an issue where tour would stay open when location changed
+  - Prevents a SecurityError from being raised when accessing localStorage
+* **topbar**
+  - Fix event unbinding
+  - Fix sticky topbar when page is refreshed. ([#213](https://github.com/pineconellc/angular-foundation/issues/213))
+
+<a name="v0.5.1"></a>
+# v0.5.1 (2014-11-29)
+## Bug Fixes
+* **topbar and modal**
+  - Fixes an issue where page offset would not be calculated correctly in IE. ([#151](https://github.com/pineconellc/angular-foundation/pull/151))
+
+<a name="v0.5.0"></a>
+# v0.5.0 (2014-11-20)
+## Bug Fixes
+* **dropdownToggle**
+  - Fixes an issue where a dropdown within a topbar would not display properly. ([#153](https://github.com/pineconellc/angular-foundation/issues/153))
+  - Unbind click handler on `$destroy` ([095a0d4](https://github.com/pineconellc/angular-foundation/commit/095a0d4dc191cf548276ade38dd5202125dae93d))
+* **tabs**
+  - Fixes an issue where the active attribute would not be set properly ([#125](https://github.com/pineconellc/angular-foundation/pull/125))
+* **modal**
+  - Destroy modal scope on close ([#139](https://github.com/pineconellc/angular-foundation/pull/139))
+
+## Features
+* **all**
+  - Angular 1.3 support ([#144](https://github.com/pineconellc/angular-foundation/pull/144))
+
+## Other
+* **all**
+  - Add editorconfig ([#134](https://github.com/pineconellc/angular-foundation/pull/134))
+  - Upgrade Karma to 0.12.x
+  - Use bower to pull in test dependencies ([#149](https://github.com/pineconellc/angular-foundation/pull/149) and [#154](https://github.com/pineconellc/angular-foundation/pull/154))
+* **tabs**
+  - Improved tests ([#132](https://github.com/pineconellc/angular-foundation/pull/132))
+
+<a name="v0.4.0"></a>
+# v0.4.0 (2014-10-15)
+## Bug Fixes
+* **modal**
+  - Fixes an issue where modal input elements could not be focused if ngTouch was enabled. ([c359d0b](https://github.com/pineconellc/angular-foundation/commit/c359d0bc4b61d6d5b9a4c1a516443231f334e91f))
+  - Fixes the size of modals with overflowing content. ([#87](https://github.com/pineconellc/angular-foundation/pull/89))
+* **tooltip**
+  - Fix unregistering of dynamic tooltip triggers ([fdc2df9](https://github.com/pineconellc/angular-foundation/commit/fdc2df9ebcc00edc04d11abf4d018f7ef6a5b269))
+* **dropdownToggle**
+  - Improved behavior for small screens
+  - Fix overflow
+
+## Features
+* **mediaQueries**
+  - Extracted `mediaQueries` factory into its own module so it can be reused. ([#99](https://github.com/pineconellc/angular-foundation/pull/99))
+* **accordion**
+  - Add active class to the open accordion segment ([27e787f](https://github.com/pineconellc/angular-foundation/commit/27e787fad563f70cae79e6c57077daa563a2e8e2))
+
 <a name="v0.3.1"></a>
 # v0.3.1 (2014-08-19)
 ## Bug Fixes
